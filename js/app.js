@@ -62,4 +62,93 @@ const galleryItems = [
         'https://cdn.pixabay.com/photo/2019/05/17/04/35/lighthouse-4208843_1280.jpg',
       description: 'Lighthouse Coast Sea',
     },
-  ];
+];
+
+const refs = {
+  gallery: document.querySelector('.js-gallery'),
+  lightbox: document.querySelector('.js-lightbox'),
+  btn: document.querySelector('[data-action="close-lightbox"]'),
+  lightboxImage: document.querySelector('.lightbox__image'),
+};
+
+function createGallery(items) {
+  const result = items.map(elem => `<li class="gallery__item">
+  <a
+    class="gallery__link"
+    href="${elem.original}"
+  >
+    <img
+      class="gallery__image"
+      src="${elem.preview}"
+      data-source="${elem.original}"
+      alt="${elem.description}"
+    />
+  </a>
+</li>`);
+
+refs.gallery.innerHTML = result.join('');
+};
+createGallery(galleryItems);
+
+
+refs.gallery.addEventListener('click', onOpenGalleryModal);
+refs.btn.addEventListener('click', onCloseModal);
+refs.lightbox.addEventListener('click', onBackDropClick);
+window.addEventListener('keydown', _.throttle(onCloseEscModal, 500));
+
+function onOpenGalleryModal(event) {
+  event.preventDefault();
+
+  if (!event.target.classList.contains('gallery__image')) {
+    return;
+  }
+
+  refs.lightbox.classList.add('is-open');
+  refs.lightboxImage.src = event.target.dataset.source;
+  refs.lightboxImage.alt = event.target.alt
+};
+
+function onCloseModal() {
+  refs.lightbox.classList.remove('is-open');
+  clearValueAttributes();
+};
+
+function onBackDropClick(event) {
+  if (!event.target.classList.contains('lightbox__overlay')) {
+    return;
+  }
+
+  refs.lightbox.classList.remove('is-open');
+  clearValueAttributes();
+};
+
+function onCloseEscModal(event) {
+  if (event.code === 'Escape') {
+    refs.lightbox.classList.remove('is-open');
+    clearValueAttributes();
+  } else {
+    null;
+  }
+};
+
+function clearValueAttributes() {
+  refs.lightboxImage.src = "";
+  refs.lightboxImage.alt = "";
+};
+
+
+// refs.gallery.addEventListener('keydown', a); 
+
+// function a(event) {
+//   console.log(event);
+//   const result = galleryItems.reduce((arr, img) => {
+//     arr.push(img.original);
+//     return arr;
+//   }, []);
+
+//   if (result.includes(event.target.href)) {
+//     let index = result.indexOf(event.target.href);
+//     index ++;
+//     refs.lightboxImage.src = result[index++];
+//   }
+// };
